@@ -1,0 +1,46 @@
+-- Create table
+CREATE TABLE customer(
+    id NUMBER(8) PRIMARY KEY, 
+    name VARCHAR2(20), 
+    address VARCHAR2(20),
+    salary NUMBER(20)
+);
+/
+
+---------------------------------------------------------------
+-- i) PL/SQL : Implicit Cursor
+---------------------------------------------------------------
+DECLARE  
+    total_rows NUMBER(2);   
+BEGIN 
+    UPDATE customer
+    SET salary = salary + 100;  
+    
+    IF SQL%NOTFOUND THEN 
+        DBMS_OUTPUT.PUT_LINE('no customers selected'); 
+    ELSIF SQL%FOUND THEN 
+        total_rows := SQL%ROWCOUNT;   -- added := and spacing
+        DBMS_OUTPUT.PUT_LINE(total_rows || ' customers selected');
+    END IF;  
+END;
+/
+
+---------------------------------------------------------------
+-- ii) PL/SQL : Explicit Cursor
+---------------------------------------------------------------
+DECLARE 
+    CURSOR customer_cur IS 
+        SELECT id, name 
+        FROM customer; 
+    
+    customer_rec customer_cur%ROWTYPE; 
+BEGIN 
+    OPEN customer_cur; 
+    LOOP 
+        FETCH customer_cur INTO customer_rec;  
+        EXIT WHEN customer_cur%NOTFOUND; 
+        DBMS_OUTPUT.PUT_LINE(customer_rec.id || ' ' || customer_rec.name); 
+    END LOOP; 
+    CLOSE customer_cur; 
+END;
+/
